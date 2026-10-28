@@ -16,9 +16,11 @@ Parameters:
     Description: CloudWatch Logs retention period for Lambda functions
   EventBusName:
     Type: AWS::SSM::Parameter::Value<String>
+    Default: /ecommerce/dev/platform/event-bus/name
     Description: EventBridge Event Bus Name
   Payment3PApiUrl:
     Type: AWS::SSM::Parameter::Value<String>
+    Default: /ecommerce/dev/payment-3p/api/url
     Description: 3rd Party Payment API Gateway URL
 
 
@@ -270,7 +272,7 @@ Resources:
     Properties:
       # The path starts with '../..' as this will be evaluated from the
       # payment/build folder, not the payment folder.
-      TemplateURL: ../../shared/templates/dlq.yaml
+      TemplateURL: templates/dlq.yaml
 
  #############
   # DASHBOARD #

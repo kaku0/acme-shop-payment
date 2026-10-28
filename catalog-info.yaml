@@ -1,0 +1,113 @@
+# Backstage catalog for this repository. Shared entries (groups, systems) are identical in every ACME Shop repo.
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: payment
+  title: Payment
+  description: Authorises, captures and cancels customer payments through the payment service provider, following the order
+    lifecycle.
+  tags:
+  - python
+  - aws-lambda
+  - dynamodb
+  - pci
+  annotations:
+    github.com/project-slug: kaku0/acme-shop-payment
+    stackrails.io/hosts: payment.api.acme-shop.example
+  links:
+  - url: https://github.com/kaku0/acme-shop-payment
+    title: Source
+spec:
+  type: service
+  lifecycle: production
+  owner: group:payments-team
+  system: payments
+  providesApis:
+  - payment-api
+  consumesApis:
+  - payment-provider-api
+  dependsOn:
+  - component:payment-provider-sandbox
+  - component:platform
+  - component:ecom-lib
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: payment-api
+  description: Payment-token validation for checkout.
+spec:
+  type: openapi
+  lifecycle: production
+  owner: group:payments-team
+  system: payments
+  definition:
+    $text: ./resources/openapi.yaml
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: payments
+  description: Taking money from customers, safely.
+spec:
+  owner: group:payments-team
+  domain: finance
+  type: business
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: acme-group
+  description: 'ACME Retail Group: online and in-store retail.'
+spec:
+  type: root
+  profile:
+    displayName: ACME Retail Group
+    email: acme-group@acme-shop.example
+  children:
+  - digital-commerce
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: digital-commerce
+  description: Everything behind the ACME online shop.
+spec:
+  type: business-unit
+  profile:
+    displayName: Digital Commerce
+    email: digital-commerce@acme-shop.example
+  parent: acme-group
+  children:
+  - customer-experience
+  - order-fulfilment
+  - finance-technology
+  - platform-engineering
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: finance-technology
+  description: Payments and payment-provider integrations.
+spec:
+  type: department
+  profile:
+    displayName: Finance Technology
+    email: finance-technology@acme-shop.example
+  parent: digital-commerce
+  children:
+  - payments-team
+  - partner-integrations-team
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: payments-team
+  description: 'Customer payments: authorise, capture, refund.'
+spec:
+  type: team
+  profile:
+    displayName: Payments Team
+    email: payments-team@acme-shop.example
+  parent: finance-technology
+  children: []
